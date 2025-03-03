@@ -28,4 +28,4 @@ jobs:
       env:
         MX_COOKIE: ${{ secrets.MX_COOKIE }}
       run: |
-        python checkin.py
+        python mx_checkin.py

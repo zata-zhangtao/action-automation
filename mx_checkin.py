@@ -3,7 +3,7 @@ import schedule
 import time
 from datetime import datetime
 import os
-Cookie = os.environ.get("YOUR_COOKIE")  # 把Cookie放置在action的环境变量中
+Cookie = os.environ.get("MX_COOKIE")  # 把Cookie放置在action的环境变量中
 def checkin():
     # 替换为实际的签到接口 URL
     url = "https://mxwljsq.top/user/checkin"

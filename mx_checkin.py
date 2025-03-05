@@ -5,6 +5,9 @@ from datetime import datetime
 import os
 import json
 
+from dotenv import load_dotenv
+load_dotenv()
+
 
 def refresh_cookie():
     """刷新 Cookie 的逻辑（需要根据实际网站实现）"""
@@ -16,11 +19,13 @@ def refresh_cookie():
             "email": os.environ.get("MX_EMAIL"),  # 从环境变量获取邮箱
             "passwd": os.environ.get("MX_PASSWORD"),  # 从环境变量获取密码
         }
+
+        print(login_data)
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
             "Content-Type": "application/x-www-form-urlencoded"
         }
-        
+        # exit()
         # 发送登录请求
         response = requests.post(login_url, data=login_data, headers=headers)
         print(response.text)

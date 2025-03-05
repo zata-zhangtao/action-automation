@@ -28,4 +28,5 @@ jobs:
       run: |
         python mx_checkin.py
       env:
-        MX_COOKIE: ${{ secrets.MX_COOKIE }}
+        MX_COOKIE: ${{ secrets.MX_EMAIL }}
+        MX_PASSWORD: ${{ secrets.MX_PASSWORD }}

@@ -3,44 +3,68 @@ import schedule
 import time
 from datetime import datetime
 import os
-Cookie = os.environ.get("MX_COOKIE").strip()  # 去除首尾空白字符和换行符  # 把Cookie放置在action的环境变量中
-print(Cookie)
+import json
+
+
+def refresh_cookie():
+    """刷新 Cookie 的逻辑（需要根据实际网站实现）"""
+    global Cookie
+    try:
+        # 替换为实际的登录 URL 和登录数据
+        login_url = "https://mxwljsq.top/auth/login"
+        login_data = {
+            "email": os.environ.get("MX_EMAIL"),  # 从环境变量获取邮箱
+            "passwd": os.environ.get("MX_PASSWORD"),  # 从环境变量获取密码
+        }
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        
+        # 发送登录请求
+        response = requests.post(login_url, data=login_data, headers=headers)
+        print(response.text)
+        if response.status_code == 200:
+            # 假设登录成功后 Cookie 在响应头中返回
+            new_cookie = response.cookies.get_dict()
+            Cookie = "; ".join([f"{k}={v}" for k, v in new_cookie.items()])
+            print(f"{datetime.now()} Cookie 刷新成功")
+            return True
+        else:
+            print(f"{datetime.now()} Cookie 刷新失败：{response.text}")
+            return False
+    except Exception as e:
+        print(f"{datetime.now()} Cookie 刷新异常：{str(e)}")
+        return False
 
 def checkin():
-    # 替换为实际的签到接口 URL
+    refresh_cookie()
+    global Cookie
     url = "https://mxwljsq.top/user/checkin"
-
-    # 准备请求头（可能需要 Cookie 或 Token 来验证身份）
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
         "Content-Type": "application/json",
-        # 如果需要登录凭证，可以在这里添加 Cookie 或 Authorization
         "Cookie": Cookie,
-        # "Authorization": "Bearer your_token_here"
-    }
-
-    # 准备请求数据（根据实际接口要求调整）
-    data = {
-        "userId": "your-user-id",  # 替换为你的用户 ID
-        "timestamp": int(time.time())  # 可选：发送当前时间戳
     }
 
     try:
-        # 发送签到请求
         response = requests.post(url, headers=headers)
         response_json = response.json()
 
-        # 检查签到是否成功
-        if response.status_code == 200 :
+        if response.status_code == 200:
             print(f"{datetime.now()} 签到成功：{response_json.get('msg')}")
+            return True
         else:
             print(f"{datetime.now()} 签到失败：{response_json.get('msg')}")
+            # 如果是登录失效，尝试刷新 Cookie
+            return False
     except Exception as e:
         print(f"{datetime.now()} 签到请求失败：{str(e)}")
+        return False
 
-
-# 脚本主循环
 if __name__ == "__main__":
     print("自动签到脚本已启动...")
-    # 首次运行时立即签到（可选）
+    # 加载本地 Cookie，如果没有则使用环境变量中的
+    # 首次运行立即签到
+    print(f"{datetime.now()} 开始执行签到任务...")
     checkin()
